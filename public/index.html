@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini CRM – Client Lead Management</title>
+  <meta name="description" content="A modern client lead management system to track your sales pipeline, manage clients, and log activities." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon"><i data-lucide="zap"></i></div>
+        <span class="logo-text">Mini<strong>CRM</strong></span>
+      </div>
+      <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">
+        <i data-lucide="panel-left-close"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#dashboard"   class="nav-item active" data-view="dashboard">
+        <i data-lucide="layout-dashboard"></i><span>Dashboard</span>
+      </a>
+      <a href="#leads"       class="nav-item" data-view="leads">
+        <i data-lucide="target"></i><span>Leads</span>
+      </a>
+      <a href="#clients"     class="nav-item" data-view="clients">
+        <i data-lucide="users"></i><span>Clients</span>
+      </a>
+      <a href="#activities"  class="nav-item" data-view="activities">
+        <i data-lucide="activity"></i><span>Activities</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar">A</div>
+        <div class="user-info"><span class="user-name">Admin</span><span class="user-role">CRM Manager</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ── -->
+  <main class="main" id="main">
+    <!-- Top bar -->
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn"><i data-lucide="menu"></i></button>
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-actions">
+        <button class="btn btn-primary" id="addBtn">
+          <i data-lucide="plus"></i><span id="addBtnLabel">Add Lead</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ── Dashboard View ── -->
+    <section class="view" id="view-dashboard">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue"><i data-lucide="target"></i></div>
+          <div class="stat-content">
+            <span class="stat-label">Total Leads</span>
+            <span class="stat-value" id="stat-leads">–</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i data-lucide="users"></i></div>
+          <div class="stat-content">
+            <span class="stat-label">Total Clients</span>
+            <span class="stat-value" id="stat-clients">–</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple"><i data-lucide="indian-rupee"></i></div>
+          <div class="stat-content">
+            <span class="stat-label">Pipeline Value</span>
+            <span class="stat-value" id="stat-pipeline">–</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold"><i data-lucide="trophy"></i></div>
+          <div class="stat-content">
+            <span class="stat-label">Won Value</span>
+            <span class="stat-value" id="stat-won">–</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="card chart-card">
+          <div class="card-header"><h2>Lead Status Breakdown</h2></div>
+          <div class="chart-wrap"><canvas id="statusChart"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2>Recent Activity</h2></div>
+          <ul class="activity-list" id="recentActivities">
+            <li class="empty-state">No activities yet</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Leads View ── -->
+    <section class="view hidden" id="view-leads">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <i data-lucide="search"></i>
+          <input type="text" id="leadSearch" placeholder="Search leads…" />
+        </div>
+        <div class="filter-wrap">
+          <select id="statusFilter">
+            <option value="">All Statuses</option>
+            <option>New</option>
+            <option>Contacted</option>
+            <option>Qualified</option>
+            <option>Proposal</option>
+            <option>Won</option>
+            <option>Lost</option>
+          </select>
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table class="data-table" id="leadsTable">
+            <thead>
+              <tr>
+                <th>Name</th><th>Company</th><th>Email</th>
+                <th>Status</th><th>Value</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="leadsBody">
+              <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Clients View ── -->
+    <section class="view hidden" id="view-clients">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <i data-lucide="search"></i>
+          <input type="text" id="clientSearch" placeholder="Search clients…" />
+        </div>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table class="data-table" id="clientsTable">
+            <thead>
+              <tr>
+                <th>Name</th><th>Company</th><th>Email</th>
+                <th>Phone</th><th>Created</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="clientsBody">
+              <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Activities View ── -->
+    <section class="view hidden" id="view-activities">
+      <div class="card">
+        <ul class="activity-list full" id="activitiesList">
+          <li class="empty-state">Loading…</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- ── Modal Overlay ── -->
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add Lead</h2>
+        <button class="modal-close" id="modalClose"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast Notification ── -->
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/leads.js"></script>
+  <script src="/js/clients.js"></script>
+  <script src="/js/activities.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
